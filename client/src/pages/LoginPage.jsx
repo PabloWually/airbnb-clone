@@ -9,7 +9,7 @@ export default function LoginPage() {
   async function handleLoginSubmit(ev) {
     ev.preventDefault();
     try {
-      await axios.post("login", { email, password });
+      await axios.post("users/login", { email, password });
       alert("Login Succesfull");
     } catch (error) {
       alert("Login Failed");

@@ -5,7 +5,7 @@ import IndexPage from "./pages/IndexPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
-axios.defaults.baseURL = 'http://172.29.99.94:4000/';
+axios.defaults.baseURL = 'http://localhost:4000/api/v1/';
 axios.defaults.withCredentials = true;
 
 function App() {
