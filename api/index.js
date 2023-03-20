@@ -3,12 +3,13 @@ const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const { config } = require("./config/config.js");
 const routerApi = require('./routes/index');
+const cookieParser = require("cookie-parser");
 const app = express();
 
 mongoose.connect(config.mongoUrl);
 
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(
   cors({
     credentials: true,

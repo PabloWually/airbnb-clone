@@ -10,6 +10,19 @@ router.get("/", (req, res) => {
   res.json("test ok");
 });
 
+router.get('/profile', (req, res) => {
+  const {token} = req.cookies;
+  if (token){
+    jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      const userDoc = await User.findById(userData._id, '_id email name');
+      res.json(userDoc);
+    });
+  }else{
+    res.json(null);
+  }
+});
+
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -36,7 +49,8 @@ router.post("/login", async (req, res) => {
         {},
         (error, token) => {
           if (error) throw error;
-          res.cookie("token", token, { sameSite: 'none', secure: true }).json("pass ok");
+          delete userDoc._doc.password;
+          res.cookie("token", token, { sameSite: 'none', secure: true }).json(userDoc);
         }
       );
     } else {
