@@ -1,26 +1,55 @@
 import axios from "axios";
-import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import AccountNavigation from "../components/AccountNavigation";
 import Perks from "../components/Perks.jsx";
 import PhotosUploader from "../components/PhotoUploader.jsx";
 
 export default function PlacesFormPage() {
-	const [tittle, setTittle] = useState("");
+	const { id } = useParams();
+	const [title, setTitle] = useState("");
 	const [address, setAddress] = useState("");
 	const [addedPhotos, setAddedPhotos] = useState([]);
 	const [description, setDesecription] = useState("");
 	const [perks, setPerks] = useState([]);
 	const [extraInfo, setExtraInfo] = useState("");
-	const [chekIn, setCheckin] = useState("");
+	const [checkIn, setCheckin] = useState("");
 	const [checkOut, setCheckOut] = useState("");
 	const [maxGuests, setMaxGuests] = useState(1);
 	const [redirect, setRedirect] = useState(false);
 
-	async function addNewPlace(ev) {
+	useEffect(() => {
+		if (!id) {
+			return;
+		}
+		axios.get("/places/list/" + id).then(response => {
+			const { data } = response;
+			setTitle(data.title);
+			setAddress(data.address);
+			setAddedPhotos(data.photos);
+			setDesecription(data.description);
+			setPerks(data.perks);
+			setExtraInfo(data.extraInfo);
+			setCheckin(data.checkIn);
+			setCheckOut(data.checkOut);
+			setMaxGuests(data.maxGuests);
+		});
+	}, [id]);
+
+	async function savePlace(ev) {
 		ev.preventDefault();
-		const { data } = await axios.post("places/create", { tittle, address, addedPhotos, description, perks, extraInfo, chekIn, checkOut, maxGuests });
-		setRedirect(true);
+		const placeData = {title, address, addedPhotos, description,
+				perks, extraInfo, checkIn, checkOut, maxGuests
+}
+		if (id) {
+			const { data } = await axios.put("places/update", {
+				id, ...placeData
+			});
+			setRedirect(true)
+		} else {
+			const { data } = await axios.post("places/create", { placeData });
+			setRedirect(true);
+		}
 	}
 
 	if (redirect) {
@@ -29,13 +58,13 @@ export default function PlacesFormPage() {
 	return (
 		<div>
 			< AccountNavigation />
-			<form onSubmit={addNewPlace}>
+			<form onSubmit={savePlace}>
 				<h2 className="text-2xl mt-4">Title</h2>
 				<p className="text-gray-500 text-sm">
 					Title for your place, should be short and catchy as in
 					advertisement
 				</p>
-				<input type="text" value={tittle} onChange={ev => setTittle(ev.target.value)} placeholder="Some tittle" />
+				<input type="text" value={title} onChange={ev => setTitle(ev.target.value)} placeholder="Some tittle" />
 				<h2 className="text-2xl mt-4">Adrress</h2>
 				<p className="text-gray-500 text-sm">Address to this place</p>
 				<input type="text" value={address} onChange={ev => setAddress(ev.target.value)} placeholder="Address" />
@@ -62,7 +91,7 @@ export default function PlacesFormPage() {
 				<div className="grid gap-2 sm:grid-cols-3">
 					<div>
 						<h3 className="mt-2 -mb-1">Chek in time</h3>
-						<input value={chekIn} onChange={ev => setCheckin(ev.target.value)} type="text" placeholder="08:00" />
+						<input value={checkIn} onChange={ev => setCheckin(ev.target.value)} type="text" placeholder="08:00" />
 					</div>
 					<div>
 						<h3 className="mt-2 -mb-1">Check out time</h3>

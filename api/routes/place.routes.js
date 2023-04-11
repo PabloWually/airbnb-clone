@@ -53,4 +53,37 @@ router.post('/create', (req, res) => {
 	});
 });
 
+router.put('/update', (req, res) => {
+	const { token } = req.cookies;
+	const {
+		id, title, address, addedPhotos, description,
+		perks, extraInfo, checkIn, checkOut, maxGuests
+	} = req.body;
+	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
+		if (err) throw err;
+		const placeDoc = await Place.findById(id);
+		if(userData._id === placeDoc.owner.toString())
+		placeDoc.set({
+			title, address, photos: addedPhotos, description,
+			perks, extraInfo, checkIn, checkOut, maxGuests
+		});
+		await placeDoc.save();
+		res.json("ok");
+	});
+});
+
+router.get("/list", (req, res) => {
+	const {token} = req.cookies;
+	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
+		if (err) throw err;
+		const {_id} = userData;
+		res.json( await Place.find({owner:_id}));
+	});
+});
+
+router.get("/list/:id", async (req, res) => {
+	const {id} = req.params;
+	res.json( await Place.findById(id));
+});
+
 module.exports = router;
