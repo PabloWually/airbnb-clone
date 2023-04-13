@@ -47,7 +47,7 @@ router.post('/create', (req, res) => {
 		const placeDoc = await Place.create({
 			owner: userData._id,
 			title, address, photos: addedPhotos, description,
-			perks, extraInfo, checkIn, checkOut, maxGuests
+			perks, extraInfo, checkIn, checkOut, maxGuests, price
 		});
 		res.json(placeDoc);
 	});
@@ -57,7 +57,7 @@ router.put('/update', (req, res) => {
 	const { token } = req.cookies;
 	const {
 		id, title, address, addedPhotos, description,
-		perks, extraInfo, checkIn, checkOut, maxGuests
+		perks, extraInfo, checkIn, checkOut, maxGuests, price
 	} = req.body;
 	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
 		if (err) throw err;
@@ -65,14 +65,18 @@ router.put('/update', (req, res) => {
 		if(userData._id === placeDoc.owner.toString())
 		placeDoc.set({
 			title, address, photos: addedPhotos, description,
-			perks, extraInfo, checkIn, checkOut, maxGuests
+			perks, extraInfo, checkIn, checkOut, maxGuests, price
 		});
 		await placeDoc.save();
 		res.json("ok");
 	});
 });
 
-router.get("/list", (req, res) => {
+router.get("/list", async (req, res) => {
+	res.json(await Place.find());
+});
+
+router.get("/list-by-user", (req, res) => {
 	const {token} = req.cookies;
 	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
 		if (err) throw err;

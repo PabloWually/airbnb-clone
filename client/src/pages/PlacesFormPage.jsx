@@ -16,6 +16,7 @@ export default function PlacesFormPage() {
 	const [checkIn, setCheckin] = useState("");
 	const [checkOut, setCheckOut] = useState("");
 	const [maxGuests, setMaxGuests] = useState(1);
+	const [price, setPrice] = useState(50);
 	const [redirect, setRedirect] = useState(false);
 
 	useEffect(() => {
@@ -33,14 +34,16 @@ export default function PlacesFormPage() {
 			setCheckin(data.checkIn);
 			setCheckOut(data.checkOut);
 			setMaxGuests(data.maxGuests);
+			setPrice(data.price);
 		});
 	}, [id]);
 
 	async function savePlace(ev) {
 		ev.preventDefault();
-		const placeData = {title, address, addedPhotos, description,
-				perks, extraInfo, checkIn, checkOut, maxGuests
-}
+		const placeData = {
+			title, address, addedPhotos, description,
+			perks, extraInfo, checkIn, checkOut, maxGuests, price
+		}
 		if (id) {
 			const { data } = await axios.put("places/update", {
 				id, ...placeData
@@ -88,7 +91,7 @@ export default function PlacesFormPage() {
 				<p className="text-gray-500 text-sm">
 					Add check in and check out times.
 				</p>
-				<div className="grid gap-2 sm:grid-cols-3">
+				<div className="grid gap-2 grid-cols-2 md:grid-cols-4">
 					<div>
 						<h3 className="mt-2 -mb-1">Chek in time</h3>
 						<input value={checkIn} onChange={ev => setCheckin(ev.target.value)} type="text" placeholder="08:00" />
@@ -100,6 +103,10 @@ export default function PlacesFormPage() {
 					<div>
 						<h3 className="mt-2 -mb-1">Max number of guests</h3>
 						<input value={maxGuests} onChange={ev => setMaxGuests(ev.target.value)} type="number" placeholder="4" />
+					</div>
+					<div>
+						<h3 className="mt-2 -mb-1">Price per night</h3>
+						<input value={price} onChange={ev => setPrice(ev.target.value)} type="number" placeholder="4" />
 					</div>
 					<button className="primary my-4">Save</button>
 				</div>

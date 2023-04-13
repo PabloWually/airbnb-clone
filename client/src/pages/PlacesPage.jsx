@@ -6,7 +6,7 @@ import AccountNavigation from "../components/AccountNavigation";
 export default function PlacesPage() {
 	const [places, setPlaces] = useState([]);
 	useEffect(() => {
-		axios.get("/places/list").then(({ data }) => {
+		axios.get("/places/list-by-user").then(({ data }) => {
 			setPlaces(data);
 		});
 	}, []);
