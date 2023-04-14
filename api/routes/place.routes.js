@@ -72,6 +72,11 @@ router.put('/update', (req, res) => {
 	});
 });
 
+router.get("/place/:id", async(req, res) => {
+	const {id} = req.params;
+	res.json(await Place.findById(id));
+});
+
 router.get("/list", async (req, res) => {
 	res.json(await Place.find());
 });
