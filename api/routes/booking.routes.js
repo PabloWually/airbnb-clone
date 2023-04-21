@@ -1,18 +1,41 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+const {config} = require("../config/config");
 const Booking = require("../Models/Booking");
 
 const router = express.Router();
 
 router.post("/create", (req, res) => {
-	const {
-		place, checkIn, checkOut, numberOfGuests, name, phone, price,
-	} = req.body; 
-	Booking.create({
-		place, checkIn, checkOut, numberOfGuests, name, phone, price,
-	}).then((doc) => {
-			res.json(doc);
-		}).catch(err => {
-			throw err;
+	const { token } = req.cookies;
+	const { place, checkIn, checkOut, numberOfGuests, name, phone, price } =
+		req.body;
+	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
+		if (err) throw err;
+		Booking.create({
+			place,
+			checkIn,
+			checkOut,
+			numberOfGuests,
+			name,
+			phone,
+			price,
+			user: userData._id,
+		})
+			.then((doc) => {
+				res.json(doc);
+			})
+			.catch((err) => {
+				throw err;
+			});
+	});
+});
+
+router.get("/list", (req, res) => {
+	const { token } = req.cookies;
+	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
+		if (err) throw err;
+		const { _id } = userData;
+		res.json(await Booking.find({ user:_id }).populate('place'));
 	});
 });
 

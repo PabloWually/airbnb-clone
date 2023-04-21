@@ -1,7 +1,8 @@
 import axios from "axios";
 import { differenceInDays } from "date-fns";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { UserContext } from "../UserContext";
 
 export default function BookingWidget({ place }) {
 	const [checkIn, setCheckIn] = useState("");
@@ -10,6 +11,13 @@ export default function BookingWidget({ place }) {
 	const [name, setName] = useState("");
 	const [phone, setPhone] = useState("");
 	const [redirect, setRedirect] = useState("");
+	const { user } = useContext(UserContext);
+
+	useEffect(() => {
+		if (user) {
+			setName(user.name);
+		}
+	}, [user]);
 
 	let numberOfDays = 0;
 	if (checkIn && checkOut) {
@@ -19,11 +27,11 @@ export default function BookingWidget({ place }) {
 	async function bookThisPlace() {
 		const response = await axios.post("/booking/create", {
 			checkIn, checkOut, numberOfGuests, name, phone,
-			place: place.id,
+			place: place._id,
 			price: numberOfDays * place.price,
 		});
 		const bookingId = response.data._id;
-		setRedirect(`/account/booking/${bookingId}`);
+		setRedirect(`/account/bookings/${bookingId}`);
 	}
 
 	if (redirect) {
