@@ -11,6 +11,13 @@ export default function PlacesPage() {
 			setPlaces(data);
 		});
 	}, []);
+
+	async function deletePlace(id) {
+		if (confirm("Are you sure?" + id)) {
+			const { data } = axios.delete("/places/delete/" + id);
+		}
+	}
+
 	return (
 		<div>
 			<AccountNavigation />
@@ -41,15 +48,20 @@ export default function PlacesPage() {
 			</div>
 			<div className="mt-4">
 				{places.length > 0 && places.map(place => (
-					<Link to={"/account/places/"+place._id} className="flex gap-2 bg-gray-200 m-2 p-4 rounded-2xl" key={place._id}>
-						<div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
-							<PlaceImg place={place} />
+					<div className="flex gap-2 bg-gray-200 m-2 p-4 rounded-2xl">
+						<Link to={"/account/places/" + place._id} className="flex gap-2" key={place._id}>
+							<div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
+								<PlaceImg place={place} />
+							</div>
+							<div className="grow-0 shrink">
+								<h2 className="text-xl">{place.title}</h2>
+								<p className="text-sm mt-2">{place.description}</p>
+							</div>
+						</Link>
+						<div className="my-auto">
+							<button className="primary" onClick={(ev)=> deletePlace(place._id)} >Delete Place</button>
 						</div>
-						<div className="grow-0 shrink">
-							<h2 className="text-xl">{place.title}</h2>
-							<p className="text-sm mt-2">{place.description}</p>
-						</div>
-					</Link>
+					</div>
 				))}
 			</div>
 		</div>

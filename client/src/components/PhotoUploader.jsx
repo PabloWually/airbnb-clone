@@ -9,9 +9,13 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
 		const { data: filename } = await axios.post("places/upload-by-link", {
 			link: photoLink
 		});
-		onChange(prev => {
-			return [...prev, filename];
-		});
+		if(filename !== null) {
+			onChange(prev => {
+				return [...prev, filename];
+			});
+		} else {
+			alert("Invalid URL!!!, please introduce a valid URL");
+		}
 		setPhotoLink("");
 	}
 
@@ -81,7 +85,7 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
 					className="h-32 cursor-pointer flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-2xl text-gray-600"
 					type=""
 				>
-					<input type="file" multiple className="hidden" onChange={uploadPhoto} />
+					<input type="file" accept="image/*" multiple className="hidden" onChange={uploadPhoto} />
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						fill="none"

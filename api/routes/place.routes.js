@@ -15,11 +15,15 @@ router.get("/", (req, res) => {
 router.post('/upload-by-link', async (req, res) => {
 	const { link } = req.body;
 	const newName = "photo" + Date.now() + '.jpg';
-	await imageDownloader.image({
-		url: link,
-		dest: __dirname + '/../uploads/' + newName,
-	});
-	res.json(newName);
+	try {
+		await imageDownloader.image({
+			url: link,
+			dest: __dirname + '/../uploads/' + newName,
+		});
+		res.json(newName);
+	} catch (error) {
+		res.json(null);
+	}
 });
 
 const photosMiddleware = multer({ dest: "uploads/" })
@@ -40,8 +44,11 @@ router.post('/create', (req, res) => {
 	const { token } = req.cookies;
 	const {
 		title, address, addedPhotos, description,
-		perks, extraInfo, checkIn, checkOut, maxGuests
+		perks, extraInfo, checkIn, checkOut, maxGuests, price
 	} = req.body;
+	console.log(title, address, addedPhotos, description,
+		perks, extraInfo, checkIn, checkOut, maxGuests, price
+);
 	jwt.verify(token, config.jwtSecret, {}, async (err, userData) => {
 		if (err) throw err;
 		const placeDoc = await Place.create({
@@ -70,6 +77,12 @@ router.put('/update', (req, res) => {
 		await placeDoc.save();
 		res.json("ok");
 	});
+});
+
+router.delete("/delete/:id", async(req, res) => {
+	const {id} = req.params;
+	const {data} = await Place.deleteOne({_id: id});
+	res.json(data);
 });
 
 router.get("/place/:id", async(req, res) => {

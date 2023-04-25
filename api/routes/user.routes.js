@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
       res.status(422).json("Wrong Password");
     }
   } else {
-    res.json("not found");
+    res.status(404).json("User not found");
   }
 });
 
