@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import AccountNavigation from "../components/AccountNavigation";
 import PlaceImg from "../components/PlaceImg";
 
 export default function PlacesPage() {
 	const [places, setPlaces] = useState([]);
+	const [redirect, setRedirect] = useState(false);
+
 	useEffect(() => {
 		axios.get("/places/list-by-user").then(({ data }) => {
 			setPlaces(data);
@@ -13,9 +15,14 @@ export default function PlacesPage() {
 	}, []);
 
 	async function deletePlace(id) {
-		if (confirm("Are you sure?" + id)) {
+		if (confirm("Are you sure?")) {
 			const { data } = axios.delete("/places/delete/" + id);
+			setRedirect(true);
 		}
+	}
+
+	if (redirect) {
+		window.location.reload(false);
 	}
 
 	return (
@@ -48,7 +55,7 @@ export default function PlacesPage() {
 			</div>
 			<div className="mt-4">
 				{places.length > 0 && places.map(place => (
-					<div className="flex gap-2 bg-gray-200 m-2 p-4 rounded-2xl">
+					<div className="flex gap-2 bg-gray-200 m-2 p-4 rounded-2xl" key={place._id}>
 						<Link to={"/account/places/" + place._id} className="flex gap-2" key={place._id}>
 							<div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
 								<PlaceImg place={place} />
@@ -59,7 +66,7 @@ export default function PlacesPage() {
 							</div>
 						</Link>
 						<div className="my-auto">
-							<button className="primary" onClick={(ev)=> deletePlace(place._id)} >Delete Place</button>
+							<button className="primary" onClick={(ev) => deletePlace(place._id)} >Delete Place</button>
 						</div>
 					</div>
 				))}

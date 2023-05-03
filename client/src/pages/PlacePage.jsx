@@ -15,11 +15,12 @@ export default function PlacePage() {
 			setPlace(response.data);
 		});
 	}, [id]);
+
 	if (!place) return "";
 
 	return (
 		<div className="mt-8 bg-gray-100 -mx-8 px-8 pt-8">
-			
+
 			<PlaceGallery place={place} />
 			<div className="mt-8 mb-8 grid gap-8 grid-cols-1 md:grid-cols-[2fr_1fr]">
 				<div>

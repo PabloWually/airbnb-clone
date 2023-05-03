@@ -25,13 +25,17 @@ export default function BookingWidget({ place }) {
 	}
 
 	async function bookThisPlace() {
-		const response = await axios.post("/booking/create", {
-			checkIn, checkOut, numberOfGuests, name, phone,
-			place: place._id,
-			price: numberOfDays * place.price,
-		});
-		const bookingId = response.data._id;
-		setRedirect(`/account/bookings/${bookingId}`);
+		if(user){
+			const response = await axios.post("/booking/create", {
+				checkIn, checkOut, numberOfGuests, name, phone,
+				place: place._id,
+				price: numberOfDays * place.price,
+			});
+			const bookingId = response.data._id;
+	 		setRedirect(`/account/bookings/${bookingId}`);
+		} else {
+			setRedirect("/login")
+		}
 	}
 
 	if (redirect) {
@@ -67,10 +71,12 @@ export default function BookingWidget({ place }) {
 					</div>
 				)}
 			</div>
-			<button className="primary mt-4" onClick={bookThisPlace}>
-				Book this Place
+			<button className="primary mt-4 disabled:opacity-75" onClick={bookThisPlace}
+				disabled={checkIn === "" || checkOut === ""}
+			>
+				Book this Place 
 				{numberOfDays && (
-					<span> ${numberOfDays * place.price}</span>
+					<span> ${numberOfDays * place.price} </span>
 				)}
 			</button>
 		</div>
