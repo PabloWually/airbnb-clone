@@ -4,6 +4,8 @@ const { default: mongoose } = require("mongoose");
 const { config } = require("./config/config.js");
 const routerApi = require('./routes/index');
 const cookieParser = require("cookie-parser");
+
+const port = config.port || 4000;
 const app = express();
 
 mongoose.connect(config.mongoUrl);
@@ -23,4 +25,4 @@ app.get("/api/test", (req, res) => {
 
 routerApi(app);
 
-app.listen(4000);
+app.listen(port);
