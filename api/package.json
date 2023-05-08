@@ -1,6 +1,4 @@
 {
-	"name": "API airbnc",
-	"version": "1.0.0",
 	"author": "Pablo Gualichico",
 	"scripts": {
 		"dev": "npx nodemon api/index.js",
